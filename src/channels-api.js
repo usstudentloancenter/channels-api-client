@@ -386,23 +386,23 @@ class ChannelsApi implements IStreamingAPI {
     }
   }
 
-  request(stream: string, payload: Object, request_id: string=UUID.generate()): Promise<Object> {
+  request(stream: string, payload: Object, requestId: string=UUID.generate()): Promise<Object> {
     return new Promise((resolve, reject) => {
-      const selector = this._buildRequestResponseSelector(stream, request_id);
+      const selector = this._buildRequestResponseSelector(stream, requestId);
 
       this.dispatcher.once(selector, data => {
         const {payload: response} = data;
-        const {response_status} = response;
+        const responseStatus = response.response_status;
 
         // 2xx is success
-        if (Math.floor(response_status / 100) === 2) {
+        if (Math.floor(responseStatus / 100) === 2) {
           resolve(response.data);
         } else {
           reject(response);
         }
       });
 
-      const message = this._buildMultiplexedMessage(stream, Object.assign({}, payload, {request_id}));
+      const message = this._buildMultiplexedMessage(stream, Object.assign({}, payload, {request_id: requestId}));
       this.send(message);
     });
   }
@@ -457,10 +457,10 @@ class ChannelsApi implements IStreamingAPI {
     return {stream, payload};
   }
 
-  _buildRequestResponseSelector(stream: string, request_id: string) {
+  _buildRequestResponseSelector(stream: string, requestId: string) {
     return {
       stream,
-      payload: {request_id},
+      payload: {request_id: requestId},
     };
   }
 
