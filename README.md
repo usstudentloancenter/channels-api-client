@@ -71,12 +71,12 @@ client.request('mystream', {key: 'value'}).then(response => {
 
 ## Configuration
 
-Some customization of ChannelsApi is available. Pass an object as the second argument to `channelsApi.connect()` with the following properties:
+The client can be customized by passing an object as the second argument to `connect()` or `createClient()`. The available options are described below.
 
 ```javascript
-const client = channelsApi.connecgt('wss://example.com', {
+const client = channelsApi.connect('wss://example.com', {
   preprocessPayload: (stream, payload, requestId) => {
-    // Modify payload any way you see fit, before its sent over the wire
+    // Modify payload any way you see fit, before it's sent over the wire
     // For instance, add a custom authentication token:
     payload.token = '123';
     // Be sure not to return anything if you modify payload
