@@ -348,6 +348,7 @@ class ChannelsApi implements IStreamingAPI {
 
   subscribe(stream: string,
             action: SubscriptionAction,
+            extraPayload: ?Object={},
             pk: ?number | SubscriptionHandler,
             callback?: SubscriptionHandler): SubscriptionPromise<Object> {
     if (typeof pk === 'function') {
@@ -361,7 +362,7 @@ class ChannelsApi implements IStreamingAPI {
 
     const selector = this._buildSubscriptionSelector(stream, action, pk);
     const handler = this._buildListener(callback);
-    const payload = this._buildSubscribePayload(action, pk);
+    const payload = this._buildSubscribePayload(action, pk, extraPayload);
 
     const listenerId = this.dispatcher.listen(selector, handler);
     const message = this._buildMultiplexedMessage(stream, payload);
@@ -480,11 +481,11 @@ class ChannelsApi implements IStreamingAPI {
     };
   }
 
-  _buildSubscribePayload(action: string, pk: ?number) {
-    const payload = {
+  _buildSubscribePayload(action: string, pk: ?number, extraPayload: ?Object={}) {
+    const payload = Object.assign({
       action: 'subscribe',
       data: {action, pk},
-    };
+    }, extraPayload);
 
     if (pk == null) {
       delete payload.data.pk;

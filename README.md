@@ -45,7 +45,7 @@ client.delete('people', 4).then(() => {
 
 
 // Subscribe to updates to any person
-const subscription = client.subscribe('people', 'update', person => {
+const subscription = client.subscribe('people', 'update', {token: 'abc123'}, person => {
   console.info('A person was updated:', person);
 });
 
@@ -54,7 +54,7 @@ subscription.cancel();
 
 
 // Subscribe to updates to person 1
-const personalSubscription = client.subscribe('people', 'update', 1, person => {
+const personalSubscription = client.subscribe('people', 'update', {token: 'abc123'}, 1, person => {
   console.info('Person 1 was updated:', person);
 });
 
