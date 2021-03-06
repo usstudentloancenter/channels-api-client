@@ -93,10 +93,11 @@ class WebsocketTransport extends EventEmitter implements ITransport {
    * @param url Websocket URL to connect to
    * @param options Options to pass to ReconnectingWebsocket
    */
-  constructor(url: string, options: Object={}) {
+  constructor(url: string, protocols: Array<any>, options: Object={}) {
     super();
     this.url = url;
     this.options = options;
+    this.protocols = protocols;
     this.socket = null;
     this.hasConnected = false;
   }
@@ -109,7 +110,7 @@ class WebsocketTransport extends EventEmitter implements ITransport {
     }
 
     log.info('Connecting to websocket at %s', this.url);
-    this.socket = new ReconnectingWebsocket(this.url, [], this.options);
+    this.socket = new ReconnectingWebsocket(this.url, this.protocols, this.options);
     this.socket.addEventListener('message', this._handleMessage);
     this.socket.addEventListener('open', this._handleOpen);
     return true;
@@ -526,8 +527,8 @@ export default {
    * @param url WebSocket URL to connect to
    * @param options Configuration for ChannelsApi and ReconnectingWebsocket
    */
-  connect(url: string, options: ChannelsApiOptions={}): ChannelsApi {
-    const client = this.createClient(url, options);
+  connect(url: string, protocols: Array<any>=[], options: ChannelsApiOptions={}): ChannelsApi {
+    const client = this.createClient(url, protocols, options);
     client.initialize();
     return client;
   },
@@ -538,9 +539,9 @@ export default {
    * @param url WebSocket URL to connect to
    * @param options Configuration for ChannelsApi and ReconnectingWebsocket
    */
-  createClient(url: string, options: ChannelsApiOptions={}): ChannelsApi {
+  createClient(url: string, protocols: Array<any> = [], options: ChannelsApiOptions={}): ChannelsApi {
     const dispatcher = new FifoDispatcher();
-    const transport = new WebsocketTransport(url, options.websocket);
+    const transport = new WebsocketTransport(url, protocols, options.websocket);
     const queue = new FifoQueue();
     const serializer = new JSONSerializer();
     return new ChannelsApi(dispatcher, transport, queue, serializer, options);
